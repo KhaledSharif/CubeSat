@@ -671,37 +671,77 @@ class Cubesat
     Status beaconing()
     {
       Serial.println("We are in beaconing mode");
-      char x = 's';
-      Wire.beginTransmission(8); // transmit to device #8
-      Wire.write(START_MSG);        // sends five bytes
-      Serial.println("Starting Beaconing");
+      
+ int temp_add=72,power_add=73,payload_add=74,telecom_add=75;
+      
+      
+      Serial.println("We are in beaconing mode");
+      Wire.beginTransmission(temp_add); // send request , start talking to get the temprature  
+      Wire.send(0); // ask for data in register 0 
       Wire.endTransmission();    // stop transmitting
+      Wire.requestFrom(temp_add, 1);    // request 1 bytes from temp add
+      while (Wire.available()==0);
+      int c = Wire.read() ; // the value of temprature in variable c 
+      Wire.beginTransmission(power_add); // send request , start talking to get the current and voltage  
+      Wire.send(0); // ask for data in register 0 , assume voltage 
+      Wire.send(1); // // ask for data in register , assume current 
+      Wire.endTransmission();    // stop transmitting
+      Wire.requestFrom(power_add, 2);  // request 2 bytes from power add
+      if (Wire.available() <= 2)
+      {
+        int c1 = Wire.read(); // the value of vlotage in variable c1
+        int c2 = Wire.read();  // the value of current in variable c2
+      }
+      
+      Wire.beginTransmission(payload_add); // send request , start talking to get the status of payload alive   
+      Wire.send(0); // ask for data in register 0 
+      Wire.endTransmission();    // stop transmitting
+      Wire.requestFrom(payload_add, 1);    // request 1 bytes from temp add
+      while (Wire.available()==0);
+      bool c3 = Wire.read() ; // the value of temprature in variable c3
+      string MSGG;
+      string tmp1;
+      int tmp2;
+      if(c3)
+      MSGG+="Payload Alive : True";
+      else
+      MSGG+="Payload Alive : False";
+      tmp2=c;
+      tmp1="";
+      while(tmp2){
+        tmp1+=(tmp2%10)+'0';
+        tmp2/=10;
+      }
+      MSGG+=" "+"Temprature in celsius = "    +string(tmp1.rbegin(),tmp1.rend());
+       tmp2 = c1;
+      tmp1="";
+      while(tmp2){
+        tmp1+=(tmp2%10)+'0';
+        tmp2/=10;
+      }
+      MSGG+=" "+"The voltage = "+string(tmp1.rbegin(),tmp1.rend());
+     tmp2 = c2;
+      tmp1="";
+      while(tmp2){
+        tmp1+=(tmp2%10)+'0';
+        tmp2/=10;
+      }
+      MSGG+=" "+"The current = "+string(tmp1.rbegin(),tmp1.rend());
+
+      Wire.beginTransmission(telecom_add); // transmit to telecommunications device
+      Wire.write(START_MSG);        // sends Start MSH
+      Wire.endTransmission();    // stop transmitting
+
       delay(500);
 
-      Wire.beginTransmission(8); // transmit to device #8
-
-      Wire.write(TEST_MSG);
-      Serial.println("JY1SAT TEST");
+      Wire.beginTransmission(telecom_add); // transmit to  telecommunications device , Commanad to inform we have becon msg to send
+      Wire.write("Send Beacon");
       Wire.endTransmission();    // stop transmitting
+      delay (500);
 
-      delay(1000);
-
-      Wire.beginTransmission(8); // transmit to device #8
-      Wire.write(STOP_MSG);
-      Serial.println("Stop .. ");
-      Wire.endTransmission();    // stop transmitting
-
-      delay(1000);
-
-      Wire.requestFrom(8, 50);    // request 6 bytes from slave device #8
-
-      while (Wire.available())
-      {
-        // slave may send less than requested
-        char c = Wire.read(); // receive a byte as character
-        Serial.print(c);         // print the character
-      }
-
+       Wire.beginTransmission(telecom_add); // transmit to telecommunications device 
+       Wire.write(MSGG); // send becon msg
+       Wire.endTransmission();    // stop transmitting
       return Status(0);
     }
 
