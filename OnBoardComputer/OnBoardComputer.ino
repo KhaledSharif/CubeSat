@@ -624,18 +624,21 @@ class Cubesat
       Status orbitalStatus = orbitalModeDelay(); // Sleep for 15 min for other subsystems
       if (orbitalStatus.fail())
       {
+          // TODO: Noor/Lutfi - add sufficient code here to check the Cubesat properties and stacks
           // handle orbital mode delay failiure here
       }
 
       Status batteryStatus = checkBattery ();
       if (batteryStatus.fail())
       {
+          // TODO: Noor/Lutfi - add sufficient code here to check the Cubesat properties and stacks
           // handle battery status check failiure here
       }
 
       Status rfStatus = checkRadioFrequency ();
       if (rfStatus.fail())
-      {
+      {  
+          // TODO: Noor/Lutfi - add sufficient code here to check the Cubesat properties and stacks
           // handle RF check failiure here
       }
 
@@ -659,6 +662,7 @@ class Cubesat
     // ====================================================
     Status recharging()
     {
+      // TODO: Noor/Lutfi - add sufficient code here to check the Cubesat properties and stacks
       return Status(0);
     }
 
@@ -707,6 +711,7 @@ class Cubesat
     // ====================================================
     void telecom()
     {
+      // TODO: Noor/Lutfi - add sufficient code here to check the Cubesat properties and stacks
       return Status(0);
     }
 };
