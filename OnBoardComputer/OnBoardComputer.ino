@@ -12,6 +12,7 @@
 #define SLEEP_MSG "sleep"
 #define STOP_MSG "stop"
 #define TEST_MSG "test"
+#define CHARGE_MSG "charge"
 
 #define STACK_SIZE 3
 
@@ -663,6 +664,13 @@ class Cubesat
     Status recharging()
     {
       // TODO: Noor/Lutfi - add sufficient code here to check the Cubesat properties and stacks
+      wire.beginTransmission(78); // send to EPS, 78 was assumed to be the eps line
+      wire.write(CHARGE_MSG);
+      Serial.printIn("Charging...");
+      wire.endTransmission();
+      
+      // we may need something to break from chargin mode once we reach a certain power level 
+      
       return Status(0);
     }
 
