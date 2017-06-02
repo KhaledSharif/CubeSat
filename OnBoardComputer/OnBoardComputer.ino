@@ -14,6 +14,12 @@
 #define TEST_MSG "test"
 #define CHARGE_MSG "charge"
 
+#define BEACON_REQUEST "Send Beacon"
+#define LISTEN_FOR_GS_REQUEST "listen"
+#define TRANSPONDER_ON_REQUEST "turn on"
+#define TRANSPONDER_OFF_REQUEST "turn off"
+#define TURN_OFF_CUBESAT "turn off"
+
 #define STACK_SIZE 3
 
 // check maximum time for the timer
@@ -717,8 +723,42 @@ class Cubesat
     // ====================================================
     // Cubesat Telecommunications Function
     // ====================================================
-    void telecom()
+    void telecom(string request)
     {
+      if (request== BEACON_REQUEST)
+      {
+        beaconing();
+        
+      } else if (request== LISTEN_FOR_GS_REQUEST )
+      {
+        string GSRequest
+          do {
+            Wire.requestFrom(CommAddress, 20);    // request 20 bytes from slave device #2 // set this at max messege size
+            int i = 0; 
+            while(Wire.available())    // slave may send less than requested
+            { 
+              GSRequest[i] = Wire.read();    // receive a byte as character
+              i = i + 1;
+            }
+          } while (GSRequest == null)
+            telecom(GSRequest)
+
+      } else if (request== TRANSPONDER_ON_REQUEST)
+      {
+        Wire.beginTransmission(CommAddress);
+        Wire.write(START_MSG);
+        Wire.endTransmission();
+
+      } else if (request == TRANSPONDER_OFF_REQUEST)
+      {
+        Wire.beginTransmission(CommAddress);
+        Wire.write(SLEEP_MSG);
+        Wire.endTransmission();
+      }else if (request== TURN_OFF_CUBESAT)
+      {
+        
+      }
+
       // TODO: Noor/Lutfi - add sufficient code here to check the Cubesat properties and stacks
       return Status(0);
     }
